@@ -3,6 +3,8 @@ package com.example.docscan
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -21,12 +23,15 @@ import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
 import java.nio.file.Files
 
 class MainActivity : AppCompatActivity() {
     val viewModel by lazy {
         DocsViewModel(application)
     }
+    val listofBitmap= mutableListOf<Bitmap>()
     companion object {
         const val REQUEST_IMAGE_CAPTURE = 10
         const val GALLERY_REQUEST_CODE = 20
@@ -45,6 +50,9 @@ class MainActivity : AppCompatActivity() {
         imagebtn.setOnClickListener {
             openImages()
         }
+        createPdf.setOnClickListener {
+            createPdf()
+        }
         viewModel.properties.observe(this, Observer {
              rev.layoutManager=GridLayoutManager(this,3)
             rev.adapter=MyAdapter(it)
@@ -58,7 +66,7 @@ class MainActivity : AppCompatActivity() {
       if(!file.exists()){
           file.mkdir()
       }
-      Toast.makeText(this,"File ${file}",Toast.LENGTH_LONG).show()
+
       return file
   }
     private fun openImages() {
@@ -95,8 +103,19 @@ class MainActivity : AppCompatActivity() {
             }
             CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE->{
                 val result=CropImage.getActivityResult(data)
-                if(resultCode==Activity.RESULT_OK){
-                    viewModel.insertData(DocsEntity(result.uri.toString()))
+                if(resultCode==Activity.RESULT_OK) {
+                    Toast.makeText(this, "Uri $result.uri", Toast.LENGTH_LONG).show()
+                    
+
+                     if(result.bitmap!=null) {
+                        listofBitmap.add(result.bitmap)
+                        viewModel.insertData(
+                            DocsEntity(
+                                result.uri.toString(),
+                                result.bitmap.toString()
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -104,6 +123,33 @@ class MainActivity : AppCompatActivity() {
 
     private fun launchImageCrop(uri: Uri) {
         CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).start(this)
+
+    }
+    private fun createPdf(){
+        var count=1;
+        var index=0;
+        val document=PdfDocument()
+        val list=viewModel.properties.value
+        list?.forEach {
+            val bitmap=listofBitmap.get(index)
+            val pageInfo=PdfDocument.PageInfo.Builder(bitmap.width,bitmap.height,count).create()
+            val page=document.startPage(pageInfo)
+            val canvas=page.canvas
+            canvas.drawBitmap(bitmap,0F,0F,null)
+            document.finishPage(page)
+            count++
+            index++
+        }
+        val dir=createFile()
+        val file=File(dir,"newfile.pdf")
+        try {
+            val fileOutputStream=FileOutputStream(file)
+            document.writeTo(fileOutputStream)
+        }
+        catch(exc:FileNotFoundException){
+            Toast.makeText(this,"$exc",Toast.LENGTH_SHORT).show()
+        }
+
 
     }
 }
