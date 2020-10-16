@@ -32,6 +32,20 @@
             android:background="@drawable/rightround"
             app:icon="@drawable/ic_baseline_image_24"
             app:cornerRadius="40px" />
+        <com.google.android.material.button.MaterialButton
+        android:layout_width="160px"
+        android:layout_height="100px"
+        android:id="@+id/createPdf"
+        android:background="@drawable/rightround"
+        app:icon="@drawable/ic_baseline_add_box_24"
+        app:cornerRadius="40px" />
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="160px"
+            android:layout_height="100px"
+            android:id="@+id/deletePdf"
+            android:background="@drawable/rightround"
+            app:icon="@drawable/ic_baseline_delete_24"
+            app:cornerRadius="40px" />
     </LinearLayout>
 
 </FrameLayout>

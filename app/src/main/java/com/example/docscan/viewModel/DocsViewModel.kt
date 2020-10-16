@@ -16,24 +16,32 @@ class DocsViewModel(application: Application) : AndroidViewModel(application) {
 
     lateinit var db: Appdatabase
 
-    lateinit var properties:LiveData<List<DocsEntity>>
+    lateinit var properties: LiveData<List<DocsEntity>>
 
     init {
 
         db =
             Room.databaseBuilder(application.applicationContext, Appdatabase::class.java, "docs_db")
+                .fallbackToDestructiveMigration()
                 .build()
-        properties=getAllData()
+        properties = getAllData()
     }
 
     fun insertData(docsEntity: DocsEntity) {
         GlobalScope.launch(Dispatchers.IO) {
             db.docsDao().insertUri(docsEntity)
         }
-        properties=getAllData()
+        properties = getAllData()
     }
+
     fun getAllData(): LiveData<List<DocsEntity>> {
         return db.docsDao().getList()
+    }
+    fun deleteAll(){
+        GlobalScope.launch(Dispatchers.IO) {
+            db.docsDao().deleteAll()
+        }
+
     }
 
 }

@@ -4,6 +4,9 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Rect
+import android.graphics.RectF
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
@@ -12,8 +15,10 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.net.toFile
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.docscan.adapter.MyAdapter
@@ -31,7 +36,8 @@ class MainActivity : AppCompatActivity() {
     val viewModel by lazy {
         DocsViewModel(application)
     }
-    val listofBitmap= mutableListOf<Bitmap>()
+    val listofBitmap = mutableListOf<Bitmap>()
+
     companion object {
         const val REQUEST_IMAGE_CAPTURE = 10
         const val GALLERY_REQUEST_CODE = 20
@@ -53,22 +59,27 @@ class MainActivity : AppCompatActivity() {
         createPdf.setOnClickListener {
             createPdf()
         }
+        deletePdf.setOnClickListener {
+            delete()
+        }
         viewModel.properties.observe(this, Observer {
-             rev.layoutManager=GridLayoutManager(this,3)
-            rev.adapter=MyAdapter(it)
+            rev.layoutManager = GridLayoutManager(this, 3)
+            rev.adapter = MyAdapter(it)
 
         })
     }
-  private fun createFile(): File {
-      val dir = applicationContext.getExternalFilesDir("")
 
-      val file = File(dir, "SCANNER")
-      if(!file.exists()){
-          file.mkdir()
-      }
+    private fun createFile(): File {
+        val dir = applicationContext.getExternalFilesDir("")
 
-      return file
-  }
+        val file = File(dir, "SCANNER")
+        if (!file.exists()) {
+            file.mkdir()
+        }
+
+        return file
+    }
+
     private fun openImages() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         intent.type = "image/*"
@@ -103,51 +114,46 @@ class MainActivity : AppCompatActivity() {
             }
             CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE->{
                 val result=CropImage.getActivityResult(data)
-                if(resultCode==Activity.RESULT_OK) {
-                    Toast.makeText(this, "Uri $result.uri", Toast.LENGTH_LONG).show()
-                    
+                viewModel.insertData(DocsEntity(result.uri.toString(),""))
 
-                     if(result.bitmap!=null) {
-                        listofBitmap.add(result.bitmap)
-                        viewModel.insertData(
-                            DocsEntity(
-                                result.uri.toString(),
-                                result.bitmap.toString()
-                            )
-                        )
-                    }
-                }
+                Toast.makeText(this,
+                        "result uri:${result.uri}",Toast.LENGTH_LONG).show()
+                val bitmap=BitmapFactory.decodeFile(result.uri.path)
+                listofBitmap.add(bitmap)
+
             }
         }
     }
-
-    private fun launchImageCrop(uri: Uri) {
-        CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).start(this)
-
+    private fun delete(){
+        viewModel.deleteAll()
     }
-    private fun createPdf(){
-        var count=1;
-        var index=0;
-        val document=PdfDocument()
-        val list=viewModel.properties.value
-        list?.forEach {
-            val bitmap=listofBitmap.get(index)
-            val pageInfo=PdfDocument.PageInfo.Builder(bitmap.width,bitmap.height,count).create()
-            val page=document.startPage(pageInfo)
+    private fun launchImageCrop(uri: Uri) {
+      CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).start(this)
+    }
+
+    private fun createPdf() {
+        var count = 1;
+        var index = 0;
+        val document = PdfDocument()
+
+        listofBitmap.forEach{
+
+            val bitmap=Bitmap.createScaledBitmap(it,1920,1080,true)
+            val pageInfo = PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, count).create()
+            val page = document.startPage(pageInfo)
             val canvas=page.canvas
-            canvas.drawBitmap(bitmap,0F,0F,null)
+            canvas.drawBitmap(bitmap,30F,30F,null)
             document.finishPage(page)
             count++
             index++
         }
-        val dir=createFile()
-        val file=File(dir,"newfile.pdf")
+        val dir = createFile()
+        val file = File(dir, "${System.currentTimeMillis()}.pdf")
         try {
-            val fileOutputStream=FileOutputStream(file)
+            val fileOutputStream = FileOutputStream(file)
             document.writeTo(fileOutputStream)
-        }
-        catch(exc:FileNotFoundException){
-            Toast.makeText(this,"$exc",Toast.LENGTH_SHORT).show()
+        } catch (exc: FileNotFoundException) {
+            Toast.makeText(this, "$exc", Toast.LENGTH_SHORT).show()
         }
 
 
