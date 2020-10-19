@@ -4,8 +4,10 @@
         <item name="android:statusBarColor">@android:color/darker_gray</item>
     </style>
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimary">#005FEE</item>
+        <item name="android:statusBarColor">@android:color/holo_orange_light</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>

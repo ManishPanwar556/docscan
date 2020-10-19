@@ -14,38 +14,104 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/linear4"
         android:layout_gravity="bottom|end"
-        android:layout_margin="60px">
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="160px"
-            android:layout_height="100px"
-            android:background="@drawable/round"
-            app:cornerRadius="40px"
-            android:id="@+id/camerabtn"
-            app:icon="@drawable/ic_baseline_photo_camera_24"
+        android:layout_margin="80px">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/text4"
+            android:visibility="invisible"
+            android:textStyle="bold"
+            android:text="Gallery"/>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#FFFFBB33"
+            android:id="@+id/gallerybtn"
+            android:outlineSpotShadowColor="@android:color/white"
+            android:src="@drawable/ic_baseline_image_24"
             />
 
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="160px"
-            android:layout_height="100px"
-            android:id="@+id/imagebtn"
-            android:background="@drawable/rightround"
-            app:icon="@drawable/ic_baseline_image_24"
-            app:cornerRadius="40px" />
-        <com.google.android.material.button.MaterialButton
-        android:layout_width="160px"
-        android:layout_height="100px"
-        android:id="@+id/createPdf"
-        android:background="@drawable/rightround"
-        app:icon="@drawable/ic_baseline_add_box_24"
-        app:cornerRadius="40px" />
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="160px"
-            android:layout_height="100px"
-            android:id="@+id/deletePdf"
-            android:background="@drawable/rightround"
-            app:icon="@drawable/ic_baseline_delete_24"
-            app:cornerRadius="40px" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/linear3"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="80px">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/text3"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            android:text="Pdfs"/>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#FFFFBB33"
+            android:id="@+id/pdfbtn"
+            android:outlineSpotShadowColor="@android:color/white"
+            android:src="@drawable/ic_baseline_folder_open_24"
+            />
+
+</LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/linear2"
+        android:layout_margin="80px"
+        android:layout_gravity="bottom|end">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/text2"
+            android:visibility="invisible"
+            android:textStyle="bold"
+            android:text="Generate Pdf"/>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#FFFFBB33"
+            android:id="@+id/createpdf"
+            android:outlineSpotShadowColor="@android:color/white"
+            android:src="@drawable/ic_baseline_folder_open_24"
+            />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="80px"
+        android:id="@+id/linear1">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/text1"
+            android:visibility="invisible"
+            android:textStyle="bold"
+            android:text="Camera"/>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#FFFFBB33"
+            android:id="@+id/camerabtn"
+            android:outlineSpotShadowColor="@android:color/white"
+            android:src="@drawable/ic_baseline_photo_camera_24"
+            />
+
     </LinearLayout>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:backgroundTint="#FFFFBB33"
+        android:src="@drawable/ic_baseline_add_24"
+        android:id="@+id/addbtn"
+        android:outlineSpotShadowColor="@android:color/white"
+        android:layout_margin="80px"
+        />
 </FrameLayout>

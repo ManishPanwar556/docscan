@@ -1,12 +1,11 @@
 package com.example.docscan
 
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Rect
-import android.graphics.RectF
+import android.graphics.*
+import android.graphics.drawable.ColorDrawable
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
@@ -18,6 +17,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.graphics.scale
 import androidx.core.net.toFile
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     val viewModel by lazy {
         DocsViewModel(application)
     }
-    val listofBitmap = mutableListOf<Bitmap>()
+    var moveUp: Boolean = true
 
     companion object {
         const val REQUEST_IMAGE_CAPTURE = 10
@@ -48,19 +48,36 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val actionBar=supportActionBar
 
-        createFile()
+        actionBar?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#FFFFBB33")))
+        addbtn.setOnClickListener {
+            if (moveUp) {
+                animateUp()
+
+            } else {
+                animateDown()
+
+            }
+        }
         camerabtn.setOnClickListener {
             openCamera()
+            animateDown()
         }
-        imagebtn.setOnClickListener {
+        gallerybtn.setOnClickListener {
             openImages()
+            animateDown()
         }
-        createPdf.setOnClickListener {
+        createpdf.setOnClickListener {
+            animateDown()
             createPdf()
+
         }
-        deletePdf.setOnClickListener {
-            delete()
+        pdfbtn.setOnClickListener {
+//            start the activity to show list of all pdfs
+            val intent=Intent(this,PdfActivity::class.java)
+            startActivity(intent)
+            animateDown()
         }
         viewModel.properties.observe(this, Observer {
             rev.layoutManager = GridLayoutManager(this, 3)
@@ -69,14 +86,63 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun createFile(): File {
-        val dir = applicationContext.getExternalFilesDir("")
+    private fun animateUp() {
+        ObjectAnimator.ofFloat(linear1, "translationY", -180f).apply {
+            text1.visibility = View.VISIBLE
+            duration = 200
+            start()
+        }
+        ObjectAnimator.ofFloat(linear2, "translationY", -360f).apply {
+            text2.visibility = View.VISIBLE
+            duration = 200
+            start()
+        }
+        ObjectAnimator.ofFloat(linear3, "translationY", -540f).apply {
+            text3.visibility = View.VISIBLE
+            duration = 200
+            start()
+        }
+        ObjectAnimator.ofFloat(linear4, "translationY", -740f).apply {
+            text4.visibility = View.VISIBLE
+            duration = 200
+            start()
+        }
+        moveUp = false
+    }
 
-        val file = File(dir, "SCANNER")
+    private fun animateDown() {
+        ObjectAnimator.ofFloat(linear1, "translationY", 0f).apply {
+            text1.visibility = View.INVISIBLE
+            duration = 200
+            start()
+        }
+        ObjectAnimator.ofFloat(linear2, "translationY", 0f).apply {
+            text2.visibility = View.INVISIBLE
+            duration = 200
+            start()
+        }
+        ObjectAnimator.ofFloat(linear3, "translationY", 0f).apply {
+            text3.visibility = View.INVISIBLE
+            duration = 200
+            start()
+        }
+        ObjectAnimator.ofFloat(linear4, "translationY", 0f).apply {
+            text4.visibility = View.INVISIBLE
+            duration = 200
+            start()
+        }
+        moveUp = true
+    }
+
+    private fun createFile(): File {
+        val file = File(
+            applicationContext.getExternalFilesDir("Document"),
+            "Scanner"
+        )
         if (!file.exists()) {
             file.mkdir()
         }
-
+        Toast.makeText(this, "$file", Toast.LENGTH_LONG).show()
         return file
     }
 
@@ -112,23 +178,20 @@ class MainActivity : AppCompatActivity() {
                     Log.e(TAG, "CANNOT GET IMAGE")
                 }
             }
-            CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE->{
-                val result=CropImage.getActivityResult(data)
-                viewModel.insertData(DocsEntity(result.uri.toString(),""))
-
-                Toast.makeText(this,
-                        "result uri:${result.uri}",Toast.LENGTH_LONG).show()
-                val bitmap=BitmapFactory.decodeFile(result.uri.path)
-                listofBitmap.add(bitmap)
+            CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
+                val result = CropImage.getActivityResult(data)
+                viewModel.insertData(DocsEntity(result.uri.path, ""))
 
             }
         }
     }
-    private fun delete(){
+
+    private fun delete() {
         viewModel.deleteAll()
     }
+
     private fun launchImageCrop(uri: Uri) {
-      CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).start(this)
+        CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).start(this)
     }
 
     private fun createPdf() {
@@ -136,16 +199,15 @@ class MainActivity : AppCompatActivity() {
         var index = 0;
         val document = PdfDocument()
 
-        listofBitmap.forEach{
+        viewModel.properties.value?.forEach{
 
-            val bitmap=Bitmap.createScaledBitmap(it,1920,1080,true)
+            val bitmap=BitmapFactory.decodeFile(it.uri)
             val pageInfo = PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, count).create()
             val page = document.startPage(pageInfo)
-            val canvas=page.canvas
-            canvas.drawBitmap(bitmap,30F,30F,null)
+            val canvas = page.canvas
+            canvas.drawBitmap(bitmap, pageInfo.contentRect, pageInfo.contentRect, null)
             document.finishPage(page)
             count++
-            index++
         }
         val dir = createFile()
         val file = File(dir, "${System.currentTimeMillis()}.pdf")
@@ -153,7 +215,7 @@ class MainActivity : AppCompatActivity() {
             val fileOutputStream = FileOutputStream(file)
             document.writeTo(fileOutputStream)
         } catch (exc: FileNotFoundException) {
-            Toast.makeText(this, "$exc", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "File not made", Toast.LENGTH_LONG).show()
         }
 
 

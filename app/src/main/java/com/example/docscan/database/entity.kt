@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class DocsEntity(
-    val uri:String,
+    val uri:String?,
     val bitmap: String,
     @PrimaryKey(autoGenerate = true)
     var id:Long=0L,

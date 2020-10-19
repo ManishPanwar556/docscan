@@ -21,6 +21,7 @@ class MyAdapter (val data:List<DocsEntity>):RecyclerView.Adapter<MyAdapter.MyVie
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        holder.view.count.text=(position+1).toString()
        Glide.with(holder.view).load(data.get(position).uri).into(holder.view.image)
     }
 
