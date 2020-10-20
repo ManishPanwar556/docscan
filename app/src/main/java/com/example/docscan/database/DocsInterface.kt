@@ -17,4 +17,12 @@ interface DocsInterface {
     suspend fun deleteAll()
     @Query("SELECT *FROM docsentity")
     fun getList():LiveData<List<DocsEntity>>
+    @Insert
+    suspend fun insertPdf(pdfEntity: PdfEntity)
+    @Delete
+    suspend fun deletePdf(pdfEntity: PdfEntity)
+    @Query("DELETE FROM pdfentity")
+    suspend fun deleteAllPdf()
+    @Query("SELECT *FROM pdfentity")
+    fun getPdfList():LiveData<List<PdfEntity>>
 }

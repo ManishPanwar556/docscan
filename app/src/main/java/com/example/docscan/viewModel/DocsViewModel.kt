@@ -8,15 +8,18 @@ import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.example.docscan.database.Appdatabase
 import com.example.docscan.database.DocsEntity
+import com.example.docscan.database.PdfEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class DocsViewModel(application: Application) : AndroidViewModel(application) {
 
-    lateinit var db: Appdatabase
+    private var db: Appdatabase
 
-    lateinit var properties: LiveData<List<DocsEntity>>
+    var properties: LiveData<List<DocsEntity>>
+
+    var pdfProperties:LiveData<List<PdfEntity>>
 
     init {
 
@@ -25,6 +28,7 @@ class DocsViewModel(application: Application) : AndroidViewModel(application) {
                 .fallbackToDestructiveMigration()
                 .build()
         properties = getAllData()
+        pdfProperties=getAllPdf()
     }
 
     fun insertData(docsEntity: DocsEntity) {
@@ -42,6 +46,25 @@ class DocsViewModel(application: Application) : AndroidViewModel(application) {
             db.docsDao().deleteAll()
         }
 
+    }
+    fun insertPdfData(pdfEntity: PdfEntity){
+        GlobalScope.launch(Dispatchers.IO) {
+            db.docsDao().insertPdf(pdfEntity)
+        }
+        pdfProperties=getAllPdf()
+    }
+    fun delete(pdfEntity: PdfEntity){
+        GlobalScope.launch(Dispatchers.IO) {
+            db.docsDao().deletePdf(pdfEntity)
+        }
+    }
+    fun deleteAllPdf(){
+        GlobalScope.launch (Dispatchers.IO){
+            db.docsDao().deleteAllPdf()
+        }
+    }
+    fun getAllPdf():LiveData<List<PdfEntity>>{
+        return db.docsDao().getPdfList()
     }
 
 }

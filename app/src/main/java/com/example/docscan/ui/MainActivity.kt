@@ -1,4 +1,4 @@
-package com.example.docscan
+package com.example.docscan.ui
 
 import android.animation.ObjectAnimator
 import android.app.Activity
@@ -8,19 +8,15 @@ import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.core.graphics.scale
-import androidx.core.net.toFile
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.docscan.R
 import com.example.docscan.adapter.MyAdapter
 import com.example.docscan.database.DocsEntity
 import com.example.docscan.viewModel.DocsViewModel
@@ -30,7 +26,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
-import java.nio.file.Files
 
 class MainActivity : AppCompatActivity() {
     val viewModel by lazy {
@@ -75,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         }
         pdfbtn.setOnClickListener {
 //            start the activity to show list of all pdfs
-            val intent=Intent(this,PdfActivity::class.java)
+            val intent=Intent(this, PdfActivity::class.java)
             startActivity(intent)
             animateDown()
         }
@@ -195,8 +190,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createPdf() {
-        var count = 1;
-        var index = 0;
+        var count = 1
         val document = PdfDocument()
 
         viewModel.properties.value?.forEach{
