@@ -10,6 +10,5 @@ data class DocsEntity(
     val uri:String?,
     val bitmap: String,
     @PrimaryKey(autoGenerate = true)
-    var id:Long=0L,
-
+    var id:Long=0L
 )

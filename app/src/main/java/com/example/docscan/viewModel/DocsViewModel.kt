@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.room.Room
 import com.example.docscan.database.Appdatabase
 import com.example.docscan.database.DocsEntity
@@ -19,7 +20,12 @@ class DocsViewModel(application: Application) : AndroidViewModel(application) {
 
     var properties: LiveData<List<DocsEntity>>
 
-    var pdfProperties:LiveData<List<PdfEntity>>
+    var pdfProperties: LiveData<List<PdfEntity>>
+
+    private val _deleteImages = MutableLiveData<Boolean>()
+
+    val deleteImages: LiveData<Boolean>
+        get() = _deleteImages
 
     init {
 
@@ -28,7 +34,7 @@ class DocsViewModel(application: Application) : AndroidViewModel(application) {
                 .fallbackToDestructiveMigration()
                 .build()
         properties = getAllData()
-        pdfProperties=getAllPdf()
+        pdfProperties = getAllPdf()
     }
 
     fun insertData(docsEntity: DocsEntity) {
@@ -41,30 +47,46 @@ class DocsViewModel(application: Application) : AndroidViewModel(application) {
     fun getAllData(): LiveData<List<DocsEntity>> {
         return db.docsDao().getList()
     }
-    fun deleteAll(){
+    fun deleteDocsEntity(docsEntity: DocsEntity){
+        GlobalScope.launch(Dispatchers.IO) {
+            db.docsDao().delete(docsEntity)
+        }
+    }
+    fun deleteAll() {
         GlobalScope.launch(Dispatchers.IO) {
             db.docsDao().deleteAll()
         }
-
     }
-    fun insertPdfData(pdfEntity: PdfEntity){
+
+    fun insertPdfData(pdfEntity: PdfEntity) {
         GlobalScope.launch(Dispatchers.IO) {
             db.docsDao().insertPdf(pdfEntity)
         }
-        pdfProperties=getAllPdf()
+        pdfProperties = getAllPdf()
     }
-    fun delete(pdfEntity: PdfEntity){
+
+    fun delete(pdfEntity: PdfEntity) {
         GlobalScope.launch(Dispatchers.IO) {
             db.docsDao().deletePdf(pdfEntity)
         }
     }
-    fun deleteAllPdf(){
-        GlobalScope.launch (Dispatchers.IO){
+    fun deleteAllImages(){
+        _deleteImages.value=true
+
+    }
+    fun deleteAllPdf() {
+        GlobalScope.launch(Dispatchers.IO) {
             db.docsDao().deleteAllPdf()
         }
     }
-    fun getAllPdf():LiveData<List<PdfEntity>>{
+
+    fun getAllPdf(): LiveData<List<PdfEntity>> {
         return db.docsDao().getPdfList()
     }
 
+    fun deletePdf(uri: String) {
+        GlobalScope.launch(Dispatchers.IO) {
+            db.docsDao().deletePdf(uri)
+        }
+    }
 }

@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">docscan</string>
     <string name="app_second_name">Home</string>
-    <string name="file_provider_authority" translatable="false">com.quiro.fileproviderexample.fileprovider</string>
+    <string name="file_provider_authority" translatable="false">com.example.docscan</string>
 </resources>

@@ -1,5 +1,11 @@
 package com.example.docscan
 
 interface ClickInterface {
-    fun onClick(uri:String,position:Int)
+    fun onShareClick(position: Int)
+
+    fun onOpenClick(position: Int)
+
+    fun onDeleteClick(position: Int)
+
+
 }

@@ -10,12 +10,15 @@ import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.docscan.OnImageClickInterface
 import com.example.docscan.R
 import com.example.docscan.adapter.MyAdapter
 import com.example.docscan.database.DocsEntity
@@ -23,16 +26,22 @@ import com.example.docscan.viewModel.DocsViewModel
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.jvm.Throws
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),OnImageClickInterface {
     val viewModel by lazy {
         DocsViewModel(application)
     }
-    var moveUp: Boolean = true
 
+    var moveUp: Boolean = true
+    lateinit var absolutePath:File
     companion object {
         const val REQUEST_IMAGE_CAPTURE = 10
         const val GALLERY_REQUEST_CODE = 20
@@ -43,7 +52,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val actionBar=supportActionBar
+        val actionBar = supportActionBar
 
         actionBar?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#FFFFBB33")))
         addbtn.setOnClickListener {
@@ -68,17 +77,20 @@ class MainActivity : AppCompatActivity() {
             createPdf()
 
         }
+
         pdfbtn.setOnClickListener {
 //            start the activity to show list of all pdfs
-            val intent=Intent(this, PdfActivity::class.java)
+            val intent = Intent(this, PdfActivity::class.java)
             startActivity(intent)
             animateDown()
         }
         viewModel.properties.observe(this, Observer {
             rev.layoutManager = GridLayoutManager(this, 3)
-            rev.adapter = MyAdapter(it)
+            rev.adapter = MyAdapter(it,this)
 
         })
+
+
     }
 
     private fun animateUp() {
@@ -137,7 +149,8 @@ class MainActivity : AppCompatActivity() {
         if (!file.exists()) {
             file.mkdir()
         }
-        Toast.makeText(this, "$file", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "File Created", Toast.LENGTH_SHORT).show()
+
         return file
     }
 
@@ -151,26 +164,48 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openCamera() {
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        try {
-            startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
-        } catch (e: ActivityNotFoundException) {
-            Log.e(TAG, "${e}")
-        }
-    }
+         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also {takePictureIntent->
+             val photoFile:File?=try{
+                 createImageFile()
+             }
+             catch (ex:IOException){
+                 Toast.makeText(this,"$ex",Toast.LENGTH_LONG).show()
+                 null
+             }
+             photoFile?.also {
+                 val uri=FileProvider.getUriForFile(this,getString(R.string.file_provider_authority),it)
+                 absolutePath=it
+                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,uri)
+                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+             }
+         }
 
+    }
+    @Throws(IOException::class)
+    private fun createImageFile():File{
+        val timeStamp=SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir=getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile("JPEG_${timeStamp}",".jpg",storageDir)
+    }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             GALLERY_REQUEST_CODE -> {
                 if (resultCode == Activity.RESULT_OK) {
                     data?.data?.let { uri ->
-                        if (uri != null) {
-                            launchImageCrop(uri)
-                        }
+                        launchImageCrop(uri)
                     }
                 } else {
                     Log.e(TAG, "CANNOT GET IMAGE")
+                }
+            }
+            REQUEST_IMAGE_CAPTURE -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    val uri=FileProvider.getUriForFile(this,getString(R.string.file_provider_authority),absolutePath)
+                    launchImageCrop(uri)
+                }
+                else{
+                    Toast.makeText(this,"Error",Toast.LENGTH_SHORT).show()
                 }
             }
             CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
@@ -181,9 +216,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun delete() {
-        viewModel.deleteAll()
-    }
 
     private fun launchImageCrop(uri: Uri) {
         CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).start(this)
@@ -193,9 +225,9 @@ class MainActivity : AppCompatActivity() {
         var count = 1
         val document = PdfDocument()
 
-        viewModel.properties.value?.forEach{
+        viewModel.properties.value?.forEach {
 
-            val bitmap=BitmapFactory.decodeFile(it.uri)
+            val bitmap = BitmapFactory.decodeFile(it.uri)
             val pageInfo = PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, count).create()
             val page = document.startPage(pageInfo)
             val canvas = page.canvas
@@ -208,10 +240,17 @@ class MainActivity : AppCompatActivity() {
         try {
             val fileOutputStream = FileOutputStream(file)
             document.writeTo(fileOutputStream)
+
         } catch (exc: FileNotFoundException) {
             Toast.makeText(this, "File not made", Toast.LENGTH_LONG).show()
         }
 
 
+    }
+
+    override fun onImageClick(position: Int) {
+        val docs=viewModel.getAllData().value?.get(position)
+        viewModel.deleteDocsEntity(docs!!)
+        File(docs?.uri).delete()
     }
 }

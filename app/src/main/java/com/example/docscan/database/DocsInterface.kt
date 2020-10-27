@@ -2,10 +2,7 @@ package com.example.docscan.database
 
 import android.net.Uri
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface DocsInterface {
@@ -17,12 +14,14 @@ interface DocsInterface {
     suspend fun deleteAll()
     @Query("SELECT *FROM docsentity")
     fun getList():LiveData<List<DocsEntity>>
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPdf(pdfEntity: PdfEntity)
     @Delete
     suspend fun deletePdf(pdfEntity: PdfEntity)
     @Query("DELETE FROM pdfentity")
     suspend fun deleteAllPdf()
+    @Query("DELETE FROM pdfentity WHERE fileUri=:uri")
+    suspend fun deletePdf(uri:String)
     @Query("SELECT *FROM pdfentity")
     fun getPdfList():LiveData<List<PdfEntity>>
 }

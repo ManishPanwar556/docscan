@@ -15,7 +15,17 @@ class PdfAdapter(val data:List<PdfEntity>,val clickInterface: ClickInterface):Re
         init {
             view.openbtn.setOnClickListener {
                 if(adapterPosition!=RecyclerView.NO_POSITION){
-                    clickInterface.onClick(data.get(adapterPosition).fileUri,adapterPosition)
+                    clickInterface.onOpenClick(adapterPosition)
+                }
+            }
+            view.Sharebtn.setOnClickListener {
+                if(adapterPosition!=RecyclerView.NO_POSITION){
+                    clickInterface.onShareClick(adapterPosition)
+                }
+            }
+            view.deletebtn.setOnClickListener {
+                if(adapterPosition!=RecyclerView.NO_POSITION){
+                    clickInterface.onDeleteClick(adapterPosition)
                 }
             }
         }
