@@ -13,6 +13,7 @@ import com.example.docscan.database.PdfEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class DocsViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -21,11 +22,6 @@ class DocsViewModel(application: Application) : AndroidViewModel(application) {
     var properties: LiveData<List<DocsEntity>>
 
     var pdfProperties: LiveData<List<PdfEntity>>
-
-    private val _deleteImages = MutableLiveData<Boolean>()
-
-    val deleteImages: LiveData<Boolean>
-        get() = _deleteImages
 
     init {
 
@@ -47,10 +43,19 @@ class DocsViewModel(application: Application) : AndroidViewModel(application) {
     fun getAllData(): LiveData<List<DocsEntity>> {
         return db.docsDao().getList()
     }
-    fun deleteDocsEntity(docsEntity: DocsEntity){
+    fun deleteDocsEntity(docsEntity: DocsEntity?){
         GlobalScope.launch(Dispatchers.IO) {
-            db.docsDao().delete(docsEntity)
+            if (docsEntity != null) {
+                db.docsDao().delete(docsEntity)
+            }
         }
+    }
+    fun getAllDocs():List<DocsEntity>{
+         lateinit var list:List<DocsEntity>
+        runBlocking{
+            list=db.docsDao().getAllDocs()
+        }
+        return list
     }
     fun deleteAll() {
         GlobalScope.launch(Dispatchers.IO) {
@@ -70,10 +75,7 @@ class DocsViewModel(application: Application) : AndroidViewModel(application) {
             db.docsDao().deletePdf(pdfEntity)
         }
     }
-    fun deleteAllImages(){
-        _deleteImages.value=true
 
-    }
     fun deleteAllPdf() {
         GlobalScope.launch(Dispatchers.IO) {
             db.docsDao().deleteAllPdf()

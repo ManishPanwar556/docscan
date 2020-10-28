@@ -14,6 +14,8 @@ interface DocsInterface {
     suspend fun deleteAll()
     @Query("SELECT *FROM docsentity")
     fun getList():LiveData<List<DocsEntity>>
+    @Query("SELECT *FROM docsentity")
+    suspend fun getAllDocs():List<DocsEntity>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPdf(pdfEntity: PdfEntity)
     @Delete

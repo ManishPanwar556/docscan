@@ -224,9 +224,8 @@ class MainActivity : AppCompatActivity(),OnImageClickInterface {
     private fun createPdf() {
         var count = 1
         val document = PdfDocument()
-
-        viewModel.properties.value?.forEach {
-
+        val list=viewModel.getAllDocs()
+        list.forEach {
             val bitmap = BitmapFactory.decodeFile(it.uri)
             val pageInfo = PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, count).create()
             val page = document.startPage(pageInfo)
@@ -248,9 +247,9 @@ class MainActivity : AppCompatActivity(),OnImageClickInterface {
 
     }
 
-    override fun onImageClick(position: Int) {
-        val docs=viewModel.getAllData().value?.get(position)
-        viewModel.deleteDocsEntity(docs!!)
-        File(docs?.uri).delete()
+    override fun onImageClick(position: Int,docsEntity: DocsEntity) {
+       viewModel.deleteDocsEntity(docsEntity)
     }
+
+
 }

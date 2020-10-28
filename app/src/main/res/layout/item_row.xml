@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginTop="12px">
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="400px"
+        android:layout_width="300px"
         android:layout_height="400px"
         app:strokeColor="@android:color/black"
         app:strokeWidth="2dp">
@@ -15,7 +15,7 @@
            android:orientation="vertical">
            <ImageView
                android:layout_width="300px"
-               android:layout_height="240px"
+               android:layout_height="280px"
                android:scaleType="fitXY"
                android:id="@+id/image"/>
            <TextView
