@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.docscan.ClickInterface
+import com.example.docscan.clickFunctionality.ClickInterface
 import com.example.docscan.R
 import com.example.docscan.database.PdfEntity
 import kotlinx.android.synthetic.main.pdf_item_row.view.*

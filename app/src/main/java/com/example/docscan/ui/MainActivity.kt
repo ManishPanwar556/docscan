@@ -2,7 +2,6 @@ package com.example.docscan.ui
 
 import android.animation.ObjectAnimator
 import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
@@ -18,7 +17,7 @@ import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.docscan.OnImageClickInterface
+import com.example.docscan.clickFunctionality.OnImageClickInterface
 import com.example.docscan.R
 import com.example.docscan.adapter.MyAdapter
 import com.example.docscan.database.DocsEntity
@@ -26,7 +25,6 @@ import com.example.docscan.viewModel.DocsViewModel
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -35,7 +33,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.jvm.Throws
 
-class MainActivity : AppCompatActivity(),OnImageClickInterface {
+class MainActivity : AppCompatActivity(), OnImageClickInterface {
     val viewModel by lazy {
         DocsViewModel(application)
     }

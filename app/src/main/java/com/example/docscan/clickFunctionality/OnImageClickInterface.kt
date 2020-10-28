@@ -1,4 +1,4 @@
-package com.example.docscan
+package com.example.docscan.clickFunctionality
 
 import com.example.docscan.database.DocsEntity
 

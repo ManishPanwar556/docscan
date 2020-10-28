@@ -1,4 +1,4 @@
-package com.example.docscan
+package com.example.docscan.clickFunctionality
 
 interface ClickInterface {
     fun onShareClick(position: Int)

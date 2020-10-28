@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.docscan.OnImageClickInterface
+import com.example.docscan.clickFunctionality.OnImageClickInterface
 import com.example.docscan.R
 import com.example.docscan.database.DocsEntity
 import kotlinx.android.synthetic.main.item_row.view.*

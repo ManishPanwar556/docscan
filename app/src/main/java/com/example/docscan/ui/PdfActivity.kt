@@ -4,23 +4,20 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.core.content.FileProvider
-import androidx.core.net.toUri
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.docscan.ClickInterface
+import com.example.docscan.clickFunctionality.ClickInterface
 import com.example.docscan.R
 import com.example.docscan.adapter.PdfAdapter
 import com.example.docscan.database.PdfEntity
 import com.example.docscan.viewModel.DocsViewModel
 import kotlinx.android.synthetic.main.activity_pdf.*
-import kotlinx.coroutines.delay
 
-class PdfActivity : AppCompatActivity(),ClickInterface {
+class PdfActivity : AppCompatActivity(), ClickInterface {
     val viewModel by lazy {
         DocsViewModel(application)
     }
