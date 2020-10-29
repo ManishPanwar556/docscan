@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import androidx.core.view.isEmpty
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.docscan.clickFunctionality.ClickInterface
@@ -29,6 +30,7 @@ class PdfActivity : AppCompatActivity(), ClickInterface {
 
         insertPdfData()
         viewModel.pdfProperties.observe(this,Observer{
+
             rev2.adapter=PdfAdapter(it,this)
             rev2.layoutManager=LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false)
         })

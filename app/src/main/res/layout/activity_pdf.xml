@@ -10,5 +10,27 @@
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/rev2"/>
+        android:id="@+id/rev2"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:layout_width="500px"
+        android:layout_height="500px"
+        android:id="@+id/detective"
+        android:layout_marginTop="500px"
+        android:layout_gravity="center"
+        android:src="@drawable/detective"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No file Found"
+        android:layout_gravity="center"
+        android:layout_marginTop="20px"
+        android:id="@+id/Nofile"/>
+
+
+
+
+
 </LinearLayout>

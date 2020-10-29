@@ -3,6 +3,7 @@ package com.example.docscan.ui
 import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.graphics.pdf.PdfDocument
@@ -225,7 +226,9 @@ class MainActivity : AppCompatActivity(), OnImageClickInterface {
         val list=viewModel.getAllDocs()
         list.forEach {
             val bitmap = BitmapFactory.decodeFile(it.uri)
-            val pageInfo = PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, count).create()
+            val width=Resources.getSystem().displayMetrics.widthPixels
+            val height=Resources.getSystem().displayMetrics.heightPixels
+            val pageInfo = PdfDocument.PageInfo.Builder(width,bitmap.height,count).create()
             val page = document.startPage(pageInfo)
             val canvas = page.canvas
             canvas.drawBitmap(bitmap, pageInfo.contentRect, pageInfo.contentRect, null)
